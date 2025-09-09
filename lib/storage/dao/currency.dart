@@ -8,14 +8,18 @@ part 'currency.g.dart';
 
 @DriftAccessor(tables: [Currencies])
 class CurrencyDao extends DatabaseAccessor<AppDatabase>
-    with _$CurrencyDaoMixin {
+    with _$CurrencyDaoMixin
+    implements CurrencyRepo {
   CurrencyDao(super.attachedDatabase);
 
-  Future<List<CurrencyRecord>> listBy({
-    required RateSource source,
+  @override
+  Future<List<CurrencyInfo>> listBy(
+    RateSource source, {
     Iterable<String>? codes,
     bool includeInvalidated = false,
   }) {
+    const converter = CurrencyInfoConverter();
+
     final q = select(currencies)..where((t) => t.source.equals(source.name));
     if (codes != null) {
       q.where((t) => t.code.isIn(codes));
@@ -26,21 +30,25 @@ class CurrencyDao extends DatabaseAccessor<AppDatabase>
     }
 
     q.orderBy([(t) => OrderingTerm.desc(t.code)]);
-    return q.get();
+    return q.map(converter.fromRecord).get();
   }
 
+  @override
   Future<void> invalidate({
     required RateSource source,
-    Iterable<String>? except,
+    Iterable<CurrencyInfo>? except,
   }) async {
+    final exceptCodes = except?.map((e) => e.code).toList();
+
     final q = update(currencies)..where((t) => t.source.equals(source.name));
-    if (except != null) {
-      q.where((t) => t.code.isNotIn(except));
+    if (exceptCodes != null) {
+      q.where((t) => t.code.isNotIn(exceptCodes));
     }
 
     await q.write(CurrenciesCompanion(invalidated: Value(true)));
   }
 
+  @override
   Future<void> saveAll(Iterable<CurrencyInfo> data) async {
     const converter = CurrencyInfoConverter();
     final records = data.map(converter.toRecord);

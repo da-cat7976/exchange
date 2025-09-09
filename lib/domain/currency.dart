@@ -40,5 +40,10 @@ abstract interface class CurrencyService {
 abstract interface class CurrencyRepo {
   Future<List<CurrencyInfo>> listBy(RateSource source);
 
-  Future<void> save(Iterable<CurrencyInfo> currencies);
+  Future<void> invalidate({
+    required RateSource source,
+    Iterable<CurrencyInfo>? except,
+  });
+
+  Future<void> saveAll(Iterable<CurrencyInfo> currencies);
 }
