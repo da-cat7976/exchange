@@ -1,4 +1,6 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:exchange/theme/theme.dart';
+import 'package:exchange/view/widgets/exchanger.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -9,13 +11,24 @@ class HomeScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        actions: [
-          IconButton(
-            onPressed: () => showLicensePage(context: context),
-            icon: Icon(Icons.info_outline_rounded),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            floating: true,
+            pinned: true,
+            backgroundColor: context.color.bg,
+            surfaceTintColor: context.color.bg,
+            actions: [
+              IconButton(
+                onPressed: () => showLicensePage(context: context),
+                icon: Icon(Icons.info_outline_rounded),
+              ),
+            ],
+            flexibleSpace: Exchanger(),
+            expandedHeight: 200,
           ),
+          // fmt
+          SliverToBoxAdapter(child: Placeholder(fallbackHeight: 1000)),
         ],
       ),
     );
