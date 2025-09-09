@@ -5,6 +5,7 @@ import 'package:exchange/logic/source.dart';
 import 'package:exchange/service/open_exchange_rates/api.dart';
 import 'package:exchange/service/open_exchange_rates/services.dart';
 import 'package:exchange/utils/dio.dart';
+import 'package:exchange/utils/env.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -17,7 +18,7 @@ CurrencyService currencyService(Ref ref) {
 
   switch (source) {
     case RateSource.openExchangeRates:
-      return OerCurrencyService(api: OpenExchangeRatesApi(dio));
+      return OerCurrencyService(api: OpenExchangeRatesApi(dio, baseUrl: Env.openExchangeRatesApi));
   }
 }
 
@@ -28,6 +29,6 @@ ExchangeRatesService exchangeRatesService(Ref ref) {
 
   switch (source) {
     case RateSource.openExchangeRates:
-      return OerRatesService(api: OpenExchangeRatesApi(dio));
+      return OerRatesService(api: OpenExchangeRatesApi(dio, baseUrl: Env.openExchangeRatesApi));
   }
 }

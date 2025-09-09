@@ -47,11 +47,11 @@ final class ExchangeRates with EquatableMixin {
     }
     final double rate;
     if(from == base) {
-      rate = rates[to]!;
+      rate = rates[to] ?? 1;
     } else if (to == base) {
-      rate = 1 / rates[from]!;
+      rate = 1 / (rates[from] ?? 1);
     } else {
-      rate = rates[to]! / rates[from]!;
+      rate = rates[to] ?? 1 / (rates[from] ?? 1);
     }
 
     return (rate: rate, exchanged: amount * rate);

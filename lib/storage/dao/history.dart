@@ -22,13 +22,13 @@ class HistoryDao extends DatabaseAccessor<AppDatabase>
     final q = select(historyEntries).join([
       innerJoin(
         from,
-        historyEntries.from.equalsExp(currencies.code) &
-            historyEntries.source.equalsExp(currencies.source),
+        historyEntries.from.equalsExp(from.code) &
+            historyEntries.source.equalsExp(from.source),
       ),
       innerJoin(
         to,
-        historyEntries.to.equalsExp(currencies.code) &
-            historyEntries.source.equalsExp(currencies.source),
+        historyEntries.to.equalsExp(to.code) &
+            historyEntries.source.equalsExp(to.source),
       ),
     ]);
 
@@ -72,13 +72,13 @@ class HistoryDao extends DatabaseAccessor<AppDatabase>
     final q = select(historyEntries).join([
       innerJoin(
         from,
-        historyEntries.from.equalsExp(currencies.code) &
-            historyEntries.source.equalsExp(currencies.source),
+        historyEntries.from.equalsExp(from.code) &
+        historyEntries.source.equalsExp(from.source),
       ),
       innerJoin(
         to,
-        historyEntries.to.equalsExp(currencies.code) &
-            historyEntries.source.equalsExp(currencies.source),
+        historyEntries.to.equalsExp(to.code) &
+        historyEntries.source.equalsExp(to.source),
       ),
     ]);
 

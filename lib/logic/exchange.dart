@@ -6,6 +6,7 @@ import 'package:exchange/domain/rate.dart';
 import 'package:exchange/logic/currencies.dart';
 import 'package:exchange/logic/rates.dart';
 import 'package:exchange/storage/providers.dart';
+import 'package:exchange/utils/env.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -106,8 +107,8 @@ class ExchangeSettingsController extends _$ExchangeSettingsController {
 
     return current.copyWith(
       from:
-          currencies?.presentOrNull(from) ?? currencies?.getByCode(from?.code),
-      to: currencies?.presentOrNull(to) ?? currencies?.getByCode(to?.code),
+          currencies?.presentOrNull(from) ?? currencies?.getByCode(from?.code) ?? currencies?.getByCode(Env.defaultFrom),
+      to: currencies?.presentOrNull(to) ?? currencies?.getByCode(to?.code) ?? currencies?.getByCode(Env.defaultTo),
     );
   }
 
@@ -134,7 +135,7 @@ class ExchangeSettingsController extends _$ExchangeSettingsController {
   }
 
   void setAmount({
-    required double amount,
+    required double? amount,
     required ExchangeDirection direction,
   }) {
     final current = state.valueOrNull;
@@ -188,8 +189,8 @@ Future<double?> exchangedAmount(Ref ref) async {
     );
   }
 
-  final historyRepo = ref.read(historyRepoProvider);
-  historyRepo.save(entry);
+  // final historyRepo = ref.read(historyRepoProvider);
+  // historyRepo.save(entry);
 
   return pair.exchanged;
 }

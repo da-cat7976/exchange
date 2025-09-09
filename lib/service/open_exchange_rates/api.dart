@@ -6,7 +6,7 @@ import 'package:retrofit/retrofit.dart';
 
 part 'api.g.dart';
 
-@RestApi(baseUrl: Env.openExchangeRatesApi)
+@RestApi()
 abstract interface class OpenExchangeRatesApi {
   factory OpenExchangeRatesApi(Dio dio, {String? baseUrl}) =
       _OpenExchangeRatesApi;

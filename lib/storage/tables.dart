@@ -18,15 +18,11 @@ class Currencies extends Table {
 
 @DataClassName('RateRecord')
 class Rates extends Table {
-  @ReferenceName('base')
-  late final base = text().references(Currencies, #code)();
+  late final base = text()();
 
   late final source = textEnum<RateSource>()();
 
-  @ReferenceName('currency')
-  late final TextColumn currency = text()
-      .references(Currencies, #code)
-      .check(base.equalsExp(currency).not())();
+  late final TextColumn currency = text()();
 
   late final RealColumn rate = real().check(rate.isBiggerThanValue(0))();
 
@@ -34,6 +30,12 @@ class Rates extends Table {
 
   @override
   Set<Column<Object>>? get primaryKey => {base, source, currency};
+
+  @override
+  List<String> get customConstraints => [
+    'CONSTRAINT fk_base FOREIGN KEY (source, base) REFERENCES currencies (source, code)',
+    'CONSTRAINT fk_currency FOREIGN KEY (source, currency) REFERENCES currencies (source, code)',
+  ];
 }
 
 @TableIndex(name: 'idx_history_issued', columns: {#issuedAt})
@@ -43,11 +45,9 @@ class HistoryEntries extends Table {
 
   late final source = textEnum<RateSource>()();
 
-  @ReferenceName('from')
-  late final from = text().references(Currencies, #code)();
+  late final from = text()();
 
-  @ReferenceName('to')
-  late final to = text().references(Currencies, #code)();
+  late final to = text()();
 
   late final RealColumn fromAmount = real().nullable().check(
     fromAmount.isNull() | fromAmount.isBiggerThanValue(0),
@@ -60,4 +60,10 @@ class HistoryEntries extends Table {
   late final RealColumn rate = real().check(rate.isBiggerThanValue(0))();
 
   late final issuedAt = dateTime()();
+
+  @override
+  List<String> get customConstraints => [
+    'CONSTRAINT fk_from FOREIGN KEY (source, "from") REFERENCES currencies (source, code)',
+    'CONSTRAINT fk_to FOREIGN KEY (source, "to") REFERENCES currencies (source, code)',
+  ];
 }

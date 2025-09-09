@@ -27,7 +27,7 @@ class AppDatabase extends _$AppDatabase implements CacheRepo {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 4;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
@@ -37,6 +37,20 @@ class AppDatabase extends _$AppDatabase implements CacheRepo {
       ),
     );
   }
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    beforeOpen: (details) async {
+      await customStatement('PRAGMA foreign_keys = ON');
+    },
+    onUpgrade: (m, from, to) async {
+      final tables = m.database.allTables;
+      for (final table in tables) {
+        await m.deleteTable(table.actualTableName);
+        await m.createTable(table);
+      }
+    },
+  );
 
   @override
   Future<void> clear() async {
