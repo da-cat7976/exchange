@@ -1,4 +1,8 @@
 enum RateSource {
   /// https://openexchangerates.org/
-  openExchangeRates,
+  openExchangeRates('USD');
+
+  final String baseCurrencyCode;
+
+  const RateSource(this.baseCurrencyCode);
 }
