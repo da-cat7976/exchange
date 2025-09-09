@@ -58,5 +58,5 @@ abstract interface class ExchangeRatesRepo {
     required String baseCode,
   });
 
-  Future<void> save(ExchangeRates exchangeRates);
+  Future<void> save(ExchangeRates exchangeRates, {bool clearOld = true});
 }

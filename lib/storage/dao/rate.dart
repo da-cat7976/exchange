@@ -51,7 +51,8 @@ class RateDao extends DatabaseAccessor<AppDatabase>
   }
 
   @override
-  Future<void> save(ExchangeRates exchangeRates) async {
+  Future<void> save(ExchangeRates exchangeRates, {bool clearOld = true}) async {
+    final source = exchangeRates.base.source;
     final base = exchangeRates.base.code;
     final records = exchangeRates.rates.entries.map(
       (e) => RateRecord(
@@ -64,7 +65,15 @@ class RateDao extends DatabaseAccessor<AppDatabase>
       ),
     );
 
-    await batch((b) => b.insertAllOnConflictUpdate(rates, records));
+    await attachedDatabase.transaction(() async {
+      if (clearOld) {
+        final q = delete(rates)
+          ..where((t) => t.source.equalsValue(source) & t.base.equals(base));
+        await q.go();
+      }
+
+      await batch((b) => b.insertAllOnConflictUpdate(rates, records));
+    });
   }
 
   Future<CurrencyRecord?> _getCurrency(
