@@ -12,6 +12,7 @@
 .swiftpm/
 migrate_working_dir/
 *.g.dart
+*.tailor.dart
 config/
 
 # IntelliJ related
