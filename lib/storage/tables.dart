@@ -41,6 +41,8 @@ class Rates extends Table {
 class HistoryEntries extends Table {
   late final id = integer().autoIncrement()();
 
+  late final source = textEnum<RateSource>()();
+
   @ReferenceName('from')
   late final from = text().references(Currencies, #code)();
 
@@ -54,6 +56,8 @@ class HistoryEntries extends Table {
   late final RealColumn toAmount = real().nullable().check(
     toAmount.isNull() | toAmount.isBiggerThanValue(0),
   )();
+
+  late final RealColumn rate = real().check(rate.isBiggerThanValue(0))();
 
   late final issuedAt = dateTime()();
 }
