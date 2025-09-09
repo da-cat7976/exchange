@@ -15,10 +15,14 @@ class AppTheme extends ThemeExtension<AppTheme> with _$AppThemeTailorMixin {
   static ThemeData buildTheme() {
     final appTheme = AppTheme.dark();
 
-    return ThemeData(
-      useMaterial3: true,
-      primaryColor: appTheme.color.onSurface,
+    var darkTheme = ThemeData.dark(useMaterial3: true);
+    return darkTheme.copyWith(
       scaffoldBackgroundColor: appTheme.color.bg,
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          foregroundColor: appTheme.color.onSurface,
+        )
+      ),
       extensions: [appTheme],
     );
   }
