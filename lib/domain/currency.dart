@@ -4,6 +4,10 @@ import 'package:exchange/domain/source.dart';
 
 part 'currency.g.dart';
 
+/// Info about currency (code, name, e.g).
+///
+/// Note that name is optional and not used in `==` and `hashcode`
+/// for identification purposes.
 @CopyWith()
 final class CurrencyInfo with EquatableMixin {
   final String code;
@@ -14,12 +18,19 @@ final class CurrencyInfo with EquatableMixin {
 
   const CurrencyInfo({
     required this.code,
-    required this.name,
+    this.name = '',
     required this.source,
   });
 
+  bool get unnamed => name.isEmpty;
+
   @override
-  List<Object?> get props => [code, name];
+  List<Object?> get props => [code, source];
+
+  bool isSame(CurrencyInfo other) {
+    if (other != this) return false;
+    return name == other.name;
+  }
 }
 
 abstract interface class CurrencyService {

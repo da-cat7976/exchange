@@ -15,6 +15,11 @@ abstract interface class OpenExchangeRatesApi {
   Future<Map<String, String>> getCurrencies({
     @Query('app_id') String appId = Env.openExchangeRatesAppId,
   });
+
+  @GET('/latest.json')
+  Future<OerRatesRsDto> getRates({
+    @Query('app_id') String appId = Env.openExchangeRatesAppId,
+  });
 }
 
 @JsonSerializable(createToJson: false)
