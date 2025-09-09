@@ -1,67 +1,195 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:equatable/equatable.dart';
 import 'package:exchange/domain/currency.dart';
-import 'package:exchange/domain/source.dart';
+import 'package:exchange/domain/history.dart';
+import 'package:exchange/domain/rate.dart';
+import 'package:exchange/logic/currencies.dart';
+import 'package:exchange/logic/rates.dart';
+import 'package:exchange/storage/providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'exchange.g.dart';
 
-sealed class ExchangeState with EquatableMixin {
-  final RateSource source;
+enum ExchangeDirection { fromTo, toFrom }
 
-  const ExchangeState({required this.source});
+sealed class ExchangeSettingsState with EquatableMixin {
+  const ExchangeSettingsState();
+
+  CurrencyInfo? get from;
+
+  CurrencyInfo? get to;
+
+  double? get amount;
+
+  ExchangeDirection? get direction;
+
+  @override
+  List<Object?> get props => [from, to, amount, direction];
+
+  ReadyExchangeSettingsState? asReady() {
+    final from = this.from;
+    final to = this.to;
+    final amount = this.amount;
+    final direction = this.direction;
+
+    if (from != null && to != null && amount != null && direction != null) {
+      return ReadyExchangeSettingsState(
+        from: from,
+        to: to,
+        amount: amount,
+        direction: direction,
+      );
+    }
+
+    return null;
+  }
 }
 
 @CopyWith()
-final class IdleExchangeState extends ExchangeState {
+final class RawExchangeSettingsState extends ExchangeSettingsState {
+  @override
   final CurrencyInfo? from;
 
+  @override
   final CurrencyInfo? to;
 
-  IdleExchangeState({required super.source, this.from, this.to});
+  @override
+  final double? amount;
 
   @override
-  List<Object?> get props => [source, from, to];
+  final ExchangeDirection? direction;
+
+  const RawExchangeSettingsState({
+    this.from,
+    this.to,
+    this.amount,
+    this.direction,
+  });
 }
 
-abstract class ReadyExchangeState extends ExchangeState {
+final class ReadyExchangeSettingsState extends ExchangeSettingsState {
+  @override
+  final CurrencyInfo from;
+
+  @override
+  final CurrencyInfo to;
+
+  @override
   final double amount;
 
-  final double converted;
-
-  ReadyExchangeState({
-    required super.source,
-    required this.amount,
-    required this.converted,
-  });
-
   @override
-  List<Object?> get props => [source, amount, converted];
-}
+  final ExchangeDirection direction;
 
-@CopyWith()
-final class FromExchangeState extends ReadyExchangeState {
-  FromExchangeState({
-    required super.source,
-    required super.amount,
-    required super.converted,
-  });
-}
-
-@CopyWith()
-final class ToExchangeState extends ReadyExchangeState {
-  ToExchangeState({
-    required super.source,
-    required super.amount,
-    required super.converted,
+  const ReadyExchangeSettingsState({
+    required this.from,
+    required this.to,
+    required this.amount,
+    required this.direction,
   });
 }
 
 @riverpod
-class ExchangeController extends _$ExchangeController {
+class ExchangeSettingsController extends _$ExchangeSettingsController {
   @override
-  Future<ExchangeState> build() {
-    // TODO: implement
-    throw UnimplementedError();
+  Future<RawExchangeSettingsState> build() async {
+    final current = state.valueOrNull ?? RawExchangeSettingsState();
+    final currencies = _currencies = ref
+        .watch(currenciesControllerProvider)
+        .valueOrNull;
+
+    final historyRepo = ref.watch(historyRepoProvider);
+    final settings = await historyRepo.getSettings();
+
+    final from = current.from ?? settings?.from;
+    final to = current.to ?? settings?.to;
+
+    return current.copyWith(
+      from:
+          currencies?.presentOrNull(from) ?? currencies?.getByCode(from?.code),
+      to: currencies?.presentOrNull(to) ?? currencies?.getByCode(to?.code),
+    );
   }
+
+  List<CurrencyInfo>? _currencies;
+
+  void setFrom(CurrencyInfo from) {
+    final current = state.valueOrNull;
+    if (current == null) return;
+
+    final valid = _currencies?.presentOrNull(from);
+    if (valid == null) return;
+
+    state = AsyncData(current.copyWith(from: valid));
+  }
+
+  void setTo(CurrencyInfo to) {
+    final current = state.valueOrNull;
+    if (current == null) return;
+
+    final valid = _currencies?.presentOrNull(to);
+    if (valid == null) return;
+
+    state = AsyncData(current.copyWith(to: valid));
+  }
+
+  void setAmount({
+    required double amount,
+    required ExchangeDirection direction,
+  }) {
+    final current = state.valueOrNull;
+    if (current == null) return;
+
+    state = AsyncData(current.copyWith(amount: amount, direction: direction));
+  }
+}
+
+@riverpod
+Future<double?> exchangedAmount(Ref ref) async {
+  final settings = ref
+      .watch(exchangeSettingsControllerProvider)
+      .valueOrNull
+      ?.asReady();
+  if (settings == null) return null;
+
+  final rates = await ref.watch(ratesControllerProvider.future);
+
+  final RateExchangedPair pair;
+  final HistoryEntry entry;
+  if (settings.direction == ExchangeDirection.fromTo) {
+    pair = rates.convertFrom(
+      from: settings.from,
+      to: settings.to,
+      amount: settings.amount,
+    );
+
+    entry = FromHistoryEntry(
+      source: settings.from.source,
+      from: settings.from,
+      to: settings.to,
+      issuedAt: DateTime.now(),
+      fromAmount: settings.amount,
+      rate: pair.rate,
+    );
+  } else {
+    pair = rates.convertTo(
+      from: settings.from,
+      to: settings.to,
+      amount: settings.amount,
+    );
+
+    entry = ToHistoryEntry(
+      source: settings.from.source,
+      from: settings.from,
+      to: settings.to,
+      issuedAt: DateTime.now(),
+      toAmount: settings.amount,
+      rate: pair.rate,
+    );
+  }
+
+  final historyRepo = ref.read(historyRepoProvider);
+  historyRepo.save(entry);
+
+  return pair.exchanged;
 }

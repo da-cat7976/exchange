@@ -8,6 +8,8 @@ part 'rate.g.dart';
 /// Key - currency, value - rate
 typedef RateMap = Map<CurrencyInfo, double>;
 
+typedef RateExchangedPair = ({double rate, double exchanged});
+
 @CopyWith()
 final class ExchangeRates with EquatableMixin {
   final CurrencyInfo base;
@@ -35,17 +37,27 @@ final class ExchangeRates with EquatableMixin {
     );
   }
 
-  double convertFrom({
+  RateExchangedPair convertFrom({
     required CurrencyInfo from,
     required CurrencyInfo to,
     required double amount,
   }) {
-    if (from == to) return amount;
-    if (from == base) return amount * rates[to]!;
-    return amount * rates[from]! / rates[to]!;
+    if (from == to) {
+      return (rate: 1, exchanged: amount);
+    }
+    final double rate;
+    if(from == base) {
+      rate = rates[to]!;
+    } else if (to == base) {
+      rate = 1 / rates[from]!;
+    } else {
+      rate = rates[to]! / rates[from]!;
+    }
+
+    return (rate: rate, exchanged: amount * rate);
   }
 
-  double convertTo({
+  RateExchangedPair convertTo({
     required CurrencyInfo from,
     required CurrencyInfo to,
     required double amount,

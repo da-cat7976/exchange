@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:exchange/domain/currency.dart';
 import 'package:exchange/logic/source.dart';
 import 'package:exchange/service/providers.dart';
@@ -27,5 +28,20 @@ class CurrenciesController extends _$CurrenciesController {
 
   void refresh() {
     ref.invalidateSelf();
+  }
+}
+
+extension CurrencyGetter on Iterable<CurrencyInfo> {
+  CurrencyInfo? getByCode(String? code) {
+    if(code == null) return null;
+    return firstWhereOrNull((e) => e.code == code);
+  }
+
+  CurrencyInfo? presentOrNull(CurrencyInfo? currency) {
+    if(currency == null) return null;
+    final byCode = getByCode(currency.code);
+    if(byCode?.source != currency.source) return null;
+
+    return byCode;
   }
 }

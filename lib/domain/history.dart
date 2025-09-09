@@ -24,6 +24,8 @@ sealed class HistoryEntry with EquatableMixin {
     required this.issuedAt,
   });
 
+  double get exchanged;
+
   @override
   List<Object?> get props => [source, from, to, rate, issuedAt];
 }
@@ -42,6 +44,9 @@ final class FromHistoryEntry extends HistoryEntry with EquatableMixin {
   });
 
   @override
+  double get exchanged => fromAmount * rate;
+
+  @override
   List<Object?> get props => [...super.props, fromAmount];
 }
 
@@ -57,6 +62,9 @@ final class ToHistoryEntry extends HistoryEntry with EquatableMixin {
     required super.issuedAt,
     required this.toAmount,
   });
+
+  @override
+  double get exchanged => toAmount / rate;
 
   @override
   List<Object?> get props => [...super.props, toAmount];
