@@ -909,6 +909,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.6"
+  theme_tailor:
+    dependency: "direct dev"
+    description:
+      name: theme_tailor
+      sha256: ba98be1d04856deef932757a3ca8fa7a5e2a6f96c30466a59c48924eeb608b97
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.3"
+  theme_tailor_annotation:
+    dependency: "direct main"
+    description:
+      name: theme_tailor_annotation
+      sha256: "9b9ecc468f892f7d2e638e7a5f704deadce627e24ae2f7bacedcbd47098f892b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.0"
   timing:
     dependency: transitive
     description:
