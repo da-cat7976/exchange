@@ -8,6 +8,8 @@ import 'package:exchange/storage/db.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+part 'providers.g.dart';
+
 @riverpod
 CurrencyRepo currencyRepo(Ref ref) {
   return CurrencyDao(ref.watch(dbProvider));
