@@ -34,6 +34,24 @@ final class ExchangeRates with EquatableMixin {
       ),
     );
   }
+
+  double convertFrom({
+    required CurrencyInfo from,
+    required CurrencyInfo to,
+    required double amount,
+  }) {
+    if (from == to) return amount;
+    if (from == base) return amount * rates[to]!;
+    return amount * rates[from]! / rates[to]!;
+  }
+
+  double convertTo({
+    required CurrencyInfo from,
+    required CurrencyInfo to,
+    required double amount,
+  }) {
+    return convertFrom(from: to, to: from, amount: amount);
+  }
 }
 
 @CopyWith()
