@@ -5,17 +5,34 @@ import 'package:exchange/domain/source.dart';
 
 part 'rate.g.dart';
 
+/// Key - currency, value - rate
+typedef RateMap = Map<CurrencyInfo, double>;
+
 @CopyWith()
 final class ExchangeRates with EquatableMixin {
   final CurrencyInfo base;
 
-  const ExchangeRates({required this.base});
+  final RateMap rates;
+
+  const ExchangeRates({required this.base, required this.rates});
 
   @override
   List<Object?> get props => [base];
 
   ExchangeRates mergeNames(Iterable<CurrencyInfo> fullInfo) {
-    throw UnimplementedError();
+    final Map<String, String> names = {
+      for (final info in fullInfo) info.code: info.name,
+    };
+
+    return ExchangeRates(
+      base: base.copyWith(name: names[base.code] ?? base.name),
+      rates: rates.map(
+        (currency, rate) => MapEntry(
+          currency.copyWith(name: names[currency.code] ?? currency.name),
+          rate,
+        ),
+      ),
+    );
   }
 }
 
