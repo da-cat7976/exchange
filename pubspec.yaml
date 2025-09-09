@@ -25,6 +25,7 @@ dependencies:
   slang_flutter: ^4.8.0
   dio: ^5.9.0
   retrofit: ^4.7.2
+  flutter_riverpod: ^2.6.1
 
 dev_dependencies:
   flutter_test:
