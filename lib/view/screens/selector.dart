@@ -41,10 +41,24 @@ class CurrencySelectorScreen extends HookConsumerWidget {
         ),
         title: Text(t.currencySelector.title),
         bottom: PreferredSize(
-          preferredSize: Size(200, 48),
-          child: TextField(
-            controller: searchCtr,
-            onChanged: (v) => updateFiltered(),
+          preferredSize: Size(200, 48 + 16),
+          child: Padding(
+            padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+            child: TextField(
+              controller: searchCtr,
+              onChanged: (v) => updateFiltered(),
+              decoration: InputDecoration(
+                fillColor: context.color.surface,
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
+                ),
+                labelText: 'Filter',
+                hintText: 'Start typing...',
+                isDense: true,
+              ),
+            ),
           ),
         ),
       ),
@@ -56,6 +70,7 @@ class CurrencySelectorScreen extends HookConsumerWidget {
             subtitle: Text(currency.name),
             title: Text(currency.code),
             onTap: () => context.pop(currency),
+            contentPadding: EdgeInsets.only(left: 32),
           );
         },
         itemCount: filtered.value?.length ?? 0,
