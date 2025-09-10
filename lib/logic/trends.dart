@@ -1,4 +1,5 @@
 import 'package:exchange/domain/trend.dart';
+import 'package:exchange/logic/connection.dart';
 import 'package:exchange/logic/exchange.dart';
 import 'package:exchange/service/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,7 +9,11 @@ part 'trends.g.dart';
 
 // ? Keeping this provider alive since trend fetching is time greedy
 @Riverpod(keepAlive: true)
-Future<RateTrend?> trends(Ref ref) {
+Future<RateTrend?> trends(Ref ref) async {
+  if (!await ref.isNetworkAvailable()) {
+    return null;
+  }
+
   final service = ref.watch(rateTrendServiceProvider);
   return service.getTrend();
 }

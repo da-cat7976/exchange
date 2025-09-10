@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:exchange/domain/currency.dart';
+import 'package:exchange/logic/connection.dart';
 import 'package:exchange/logic/source.dart';
 import 'package:exchange/service/providers.dart';
 import 'package:exchange/storage/providers.dart';
@@ -17,6 +18,10 @@ class CurrenciesController extends _$CurrenciesController {
 
     final source = ref.watch(sourceControllerProvider);
     final stored = await repo.listBy(source);
+    if (!await ref.isNetworkAvailable()) {
+      return stored;
+    }
+
     state = AsyncData(stored).copyAsLoading();
 
     final loaded = await service.getAvailableCurrencies();
@@ -33,14 +38,14 @@ class CurrenciesController extends _$CurrenciesController {
 
 extension CurrencyGetter on Iterable<CurrencyInfo> {
   CurrencyInfo? getByCode(String? code) {
-    if(code == null) return null;
+    if (code == null) return null;
     return firstWhereOrNull((e) => e.code == code);
   }
 
   CurrencyInfo? presentOrNull(CurrencyInfo? currency) {
-    if(currency == null) return null;
+    if (currency == null) return null;
     final byCode = getByCode(currency.code);
-    if(byCode?.source != currency.source) return null;
+    if (byCode?.source != currency.source) return null;
 
     return byCode;
   }

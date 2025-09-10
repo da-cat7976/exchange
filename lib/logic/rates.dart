@@ -1,4 +1,6 @@
+import 'package:exchange/domain/currency.dart';
 import 'package:exchange/domain/rate.dart';
+import 'package:exchange/logic/connection.dart';
 import 'package:exchange/logic/source.dart';
 import 'package:exchange/service/providers.dart';
 import 'package:exchange/storage/providers.dart';
@@ -20,6 +22,13 @@ class RatesController extends _$RatesController {
       baseCode: source.baseCurrencyCode,
     );
     if (stored != null) state = AsyncData(stored).copyAsLoading();
+    if (!await ref.isNetworkAvailable()) {
+      return stored ??
+          ExchangeRates(
+            base: CurrencyInfo(code: source.baseCurrencyCode, source: source),
+            rates: {},
+          );
+    }
 
     final loaded = await service.getRates();
     await repo.save(loaded);

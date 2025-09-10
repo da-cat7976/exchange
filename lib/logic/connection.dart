@@ -16,3 +16,9 @@ Stream<bool> connection(Ref ref) {
     (results) => results.any((c) => presentIf.contains(c)),
   );
 }
+
+extension CheckConnection on Ref {
+  Future<bool> isNetworkAvailable() async {
+    return await watch(connectionProvider.future);
+  }
+}
