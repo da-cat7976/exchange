@@ -37,7 +37,7 @@ final class ExchangeRates with EquatableMixin {
     );
   }
 
-  RateExchangedPair convertFrom({
+  RateExchangedPair? convertFrom({
     required CurrencyInfo from,
     required CurrencyInfo to,
     required double amount,
@@ -46,18 +46,28 @@ final class ExchangeRates with EquatableMixin {
       return (rate: 1, exchanged: amount);
     }
     final double rate;
-    if(from == base) {
-      rate = rates[to] ?? 1;
+
+    final toRate = rates[to];
+    final fromRate = rates[from];
+
+    if (from == base) {
+      if (toRate == null) return null;
+
+      rate = toRate;
     } else if (to == base) {
-      rate = 1 / (rates[from] ?? 1);
+      if (fromRate == null) return null;
+
+      rate = 1 / fromRate;
     } else {
-      rate = (rates[to] ?? 1) / (rates[from] ?? 1);
+      if (fromRate == null || toRate == null) return null;
+
+      rate = toRate / fromRate;
     }
 
     return (rate: rate, exchanged: amount * rate);
   }
 
-  RateExchangedPair convertTo({
+  RateExchangedPair? convertTo({
     required CurrencyInfo from,
     required CurrencyInfo to,
     required double amount,

@@ -21,8 +21,10 @@ final class RateTrend with EquatableMixin {
     required CurrencyInfo to,
   }) {
     return rates.map(
-      (date, rate) =>
-          MapEntry(date, rate.convertTo(from: from, to: to, amount: 1).rate),
+      (date, rate) => MapEntry(
+        date,
+        rate.convertTo(from: from, to: to, amount: 1)?.rate ?? 1,
+      ),
     );
   }
 }

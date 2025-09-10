@@ -159,7 +159,7 @@ Future<RateExchangedPair?> exchangedAmount(Ref ref) async {
 
   final rates = await ref.watch(ratesControllerProvider.future);
 
-  final RateExchangedPair pair;
+  final RateExchangedPair? pair;
   if (settings.direction == ExchangeDirection.fromTo) {
     pair = rates.convertFrom(
       from: settings.from,

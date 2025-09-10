@@ -16,7 +16,7 @@ class TrendView extends HookConsumerWidget {
     final trendState = ref.watch(trendForCurrentProvider);
     final trend = trendState.valueOrNull;
     final Widget child;
-    if (trendState.isLoading) {
+    if (trendState.isLoading && trend == null) {
       child = SizedBox(
         key: ValueKey('loading'),
         width: double.infinity,
