@@ -22,10 +22,12 @@ class CurrencySelectorScreen extends HookConsumerWidget {
     Dispose? updateFiltered() {
       filtered.value = currencies
           ?.where(
-            (c) =>
-                searchCtr.text.isEmpty ||
-                c.code.contains(searchCtr.text) ||
-                c.name.contains(searchCtr.text),
+            (c) {
+              final text = searchCtr.text.toUpperCase();
+              return text.isEmpty ||
+                c.code.contains(text) ||
+                c.name.toUpperCase().contains(text);
+            },
           )
           .toList();
 
