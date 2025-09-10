@@ -1,0 +1,10 @@
+{
+  "oerApi": "https://openexchangerates.org/api/",
+  "oerAppId": "<paste your OpenExchangeRates app id here>",
+  "defaultSource": "currencyApi",
+  "defaultFrom": "USD",
+  "defaultTo": "RUB",
+  "defaultAmount": 100,
+  "currencyApiUrl": "https://latest.currency-api.pages.dev/v1/",
+  "currencyApiHistory": "https://date.currency-api.pages.dev/v1/"
+}

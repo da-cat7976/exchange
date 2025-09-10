@@ -14,7 +14,8 @@ migrate_working_dir/
 *.g.dart
 *.gr.dart
 *.tailor.dart
-config/
+config/**
+!config/example.json
 
 # IntelliJ related
 *.iml
