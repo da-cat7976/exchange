@@ -29,11 +29,7 @@ class Exchanger extends HookConsumerWidget {
         } else {
           child = Padding(
             key: ValueKey('full'),
-            padding: EdgeInsetsGeometry.only(
-              left: 24,
-              top: 24,
-              bottom: 24,
-            ),
+            padding: EdgeInsetsGeometry.only(left: 24, top: 24, bottom: 24),
             child: _FullExchanger(),
           );
         }
@@ -91,6 +87,7 @@ class _FullExchanger extends HookConsumerWidget {
                     Expanded(
                       child: _CurrencyInput(
                         controller: fromCtr,
+                        isLoading: settings.isLoading,
                         label: t.exchanger.from,
                         onTapCurrency: () async {
                           final result = await context.pushRoute<CurrencyInfo>(
@@ -111,6 +108,7 @@ class _FullExchanger extends HookConsumerWidget {
                     Expanded(
                       child: _CurrencyInput(
                         controller: toCtr,
+                        isLoading: settings.isLoading,
                         label: t.exchanger.to,
                         onTapCurrency: () async {
                           final result = await context.pushRoute<CurrencyInfo>(
@@ -171,6 +169,7 @@ class _CurrencyInput extends HookConsumerWidget {
     required this.onTapCurrency,
     required this.currency,
     this.onChanged,
+    this.isLoading = false,
   });
 
   final TextEditingController controller;
@@ -183,6 +182,8 @@ class _CurrencyInput extends HookConsumerWidget {
 
   final ValueChanged<String>? onChanged;
 
+  final bool isLoading;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final historyCtr = ref.watch(historyControllerProvider.notifier);
@@ -194,12 +195,12 @@ class _CurrencyInput extends HookConsumerWidget {
         children: [
           Expanded(
             child: TextField(
+              enabled: !isLoading,
               focusNode: node,
               controller: controller,
               decoration: InputDecoration(
                 border: InputBorder.none,
                 labelText: label,
-                hintText: t.exchanger.hint,
                 isDense: true,
               ),
               onChanged: onChanged,
@@ -213,7 +214,7 @@ class _CurrencyInput extends HookConsumerWidget {
             ),
           ),
           InkWell(
-            onTap: onTapCurrency,
+            onTap: isLoading ? null : onTapCurrency,
             child: Container(
               height: double.infinity,
               padding: EdgeInsets.symmetric(horizontal: 16),
