@@ -1,5 +1,8 @@
+import 'package:auto_route/auto_route.dart';
+import 'package:exchange/domain/currency.dart';
 import 'package:exchange/gen/strings.g.dart';
 import 'package:exchange/logic/exchange.dart';
+import 'package:exchange/navigation/router.gr.dart';
 import 'package:exchange/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,6 +15,7 @@ class Exchanger extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(exchangeSettingsControllerProvider);
+    final settingsCtr = ref.watch(exchangeSettingsControllerProvider.notifier);
     final value = settings.valueOrNull;
 
     final fromCtr = useTextEditingController();
@@ -58,13 +62,18 @@ class Exchanger extends HookConsumerWidget {
                         controller: fromCtr,
                         label: t.exchanger.from,
                         formatter: _formatter,
-                        onTap: () {},
-                        onChanged: (value) => ref
-                            .read(exchangeSettingsControllerProvider.notifier)
-                            .setAmount(
-                              amount: double.tryParse(value),
-                              direction: ExchangeDirection.fromTo,
-                            ),
+                        onTapCurrency: () async {
+                          final result = await context.pushRoute<CurrencyInfo>(
+                            CurrencySelectorRoute(),
+                          );
+                          if (result == null) return;
+
+                          settingsCtr.setFrom(result);
+                        },
+                        onChanged: (value) => settingsCtr.setAmount(
+                          amount: double.tryParse(value),
+                          direction: ExchangeDirection.fromTo,
+                        ),
                         currency: value?.from?.code ?? 'XXX',
                       ),
                     ), // fmt
@@ -74,13 +83,18 @@ class Exchanger extends HookConsumerWidget {
                         controller: toCtr,
                         label: t.exchanger.to,
                         formatter: _formatter,
-                        onTap: () {},
-                        onChanged: (value) => ref
-                            .read(exchangeSettingsControllerProvider.notifier)
-                            .setAmount(
-                              amount: double.tryParse(value),
-                              direction: ExchangeDirection.toFrom,
-                            ),
+                        onTapCurrency: () async {
+                          final result = await context.pushRoute<CurrencyInfo>(
+                            CurrencySelectorRoute(),
+                          );
+                          if (result == null) return;
+
+                          settingsCtr.setTo(result);
+                        },
+                        onChanged: (value) => settingsCtr.setAmount(
+                          amount: double.tryParse(value),
+                          direction: ExchangeDirection.toFrom,
+                        ),
                         currency: value?.to?.code ?? 'XXX',
                       ),
                     ),
@@ -105,7 +119,7 @@ class _CurrencyInput extends HookConsumerWidget {
     required this.controller,
     required this.label,
     required FilteringTextInputFormatter formatter,
-    required this.onTap,
+    required this.onTapCurrency,
     required this.currency,
     this.onChanged,
   }) : _formatter = formatter;
@@ -116,7 +130,7 @@ class _CurrencyInput extends HookConsumerWidget {
 
   final FilteringTextInputFormatter _formatter;
 
-  final VoidCallback onTap;
+  final VoidCallback onTapCurrency;
 
   final String currency;
 
@@ -144,7 +158,7 @@ class _CurrencyInput extends HookConsumerWidget {
             ),
           ),
           InkWell(
-            onTap: onTap,
+            onTap: onTapCurrency,
             child: Container(
               height: double.infinity,
               padding: EdgeInsets.symmetric(horizontal: 16),
