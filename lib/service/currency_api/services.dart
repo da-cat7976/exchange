@@ -17,7 +17,7 @@ final class CurrencyApiCurrencyService implements CurrencyService {
     return response.entries
         .map(
           (e) => CurrencyInfo(
-            code: e.key,
+            code: e.key.toUpperCase(),
             name: e.value,
             source: RateSource.currencyApi,
           ),
@@ -42,7 +42,10 @@ final class CurrencyApiRateService implements ExchangeRatesService {
       ),
       rates: response.usd.map(
         (code, rate) => MapEntry(
-          CurrencyInfo(code: code, source: RateSource.currencyApi),
+          CurrencyInfo(
+            code: code.toUpperCase(),
+            source: RateSource.currencyApi,
+          ),
           rate,
         ),
       ),

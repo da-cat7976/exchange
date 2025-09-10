@@ -1,5 +1,6 @@
 import 'package:exchange/domain/currency.dart';
 import 'package:exchange/domain/history.dart';
+import 'package:exchange/gen/strings.g.dart';
 import 'package:exchange/logic/history.dart';
 import 'package:exchange/theme/theme.dart';
 import 'package:exchange/view/utils/error.dart';
@@ -24,7 +25,7 @@ class HistoryHeader extends ConsumerWidget {
             Icon(Icons.history_rounded, color: context.color.onSurfaceDimmed),
             SizedBox(width: 16),
             Text(
-              'History',
+              t.history.title,
               style: context.text.subtitle.copyWith(
                 color: context.color.onSurfaceDimmed,
               ),
@@ -79,6 +80,10 @@ class HistoryView extends HookConsumerWidget {
               Icon(Icons.chevron_right_rounded, size: 24),
               Text(to.code),
             ],
+          ),
+          subtitle: Text(
+            t.source.sources(context: entry.from.source),
+            style: context.text.label,
           ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,

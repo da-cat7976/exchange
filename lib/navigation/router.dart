@@ -7,5 +7,6 @@ class AppRouter extends RootStackRouter {
   List<AutoRoute> get routes => [
     AutoRoute(page: HomeRoute.page, initial: true, children: []), // fmt
     AutoRoute(page: CurrencySelectorRoute.page), // fmt
+    AutoRoute(page: SourceSelectorRoute.page), // fmt
   ];
 }

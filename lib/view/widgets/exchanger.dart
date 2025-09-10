@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:animated_switcher_plus/animated_switcher_plus.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:exchange/domain/currency.dart';
@@ -31,22 +33,28 @@ class Exchanger extends HookConsumerWidget {
 
           child = Padding(
             key: ValueKey('full'),
-            padding: EdgeInsets.symmetric(
-              horizontal: horizontalPadding,
-              vertical: 24,
+            padding: EdgeInsetsGeometry.only(
+              left: horizontalPadding,
+              top: 24,
+              bottom: 24,
             ),
-            child: _FullExchanger(),
+            child: _FullExchanger(horizontalPadding: horizontalPadding),
           );
         }
 
-        return AnimatedSwitcherPlus.translationRight(duration: 300.ms, child: child);
+        return AnimatedSwitcherPlus.translationRight(
+          duration: 300.ms,
+          child: child,
+        );
       },
     );
   }
 }
 
 class _FullExchanger extends HookConsumerWidget {
-  const _FullExchanger({super.key});
+  const _FullExchanger({super.key, required this.horizontalPadding});
+
+  final double horizontalPadding;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -75,57 +83,73 @@ class _FullExchanger extends HookConsumerWidget {
       return;
     }, [exchangedStr]);
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: Container(
-        decoration: BoxDecoration(color: context.color.surface),
-        child: Material(
-          color: Colors.transparent,
-          child: Column(
-            children: [
-              Expanded(
-                child: _CurrencyInput(
-                  controller: fromCtr,
-                  label: t.exchanger.from,
-                  onTapCurrency: () async {
-                    final result = await context.pushRoute<CurrencyInfo>(
-                      CurrencySelectorRoute(selection: value?.from),
-                    );
-                    if (result == null) return;
+    return Row(
+      children: [
+        Expanded(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: Container(
+              decoration: BoxDecoration(color: context.color.surface),
+              child: Material(
+                color: Colors.transparent,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: _CurrencyInput(
+                        controller: fromCtr,
+                        label: t.exchanger.from,
+                        onTapCurrency: () async {
+                          final result = await context.pushRoute<CurrencyInfo>(
+                            CurrencySelectorRoute(selection: value?.from),
+                          );
+                          if (result == null) return;
 
-                    settingsCtr.setFrom(result);
-                  },
-                  onChanged: (value) => settingsCtr.setAmount(
-                    amount: double.tryParse(value),
-                    direction: ExchangeDirection.fromTo,
-                  ),
-                  currency: value?.from?.code ?? 'XXX',
-                ),
-              ), // fmt
-              Divider(height: 1),
-              Expanded(
-                child: _CurrencyInput(
-                  controller: toCtr,
-                  label: t.exchanger.to,
-                  onTapCurrency: () async {
-                    final result = await context.pushRoute<CurrencyInfo>(
-                      CurrencySelectorRoute(selection: value?.to),
-                    );
-                    if (result == null) return;
+                          settingsCtr.setFrom(result);
+                        },
+                        onChanged: (value) => settingsCtr.setAmount(
+                          amount: double.tryParse(value),
+                          direction: ExchangeDirection.fromTo,
+                        ),
+                        currency: value?.from?.code ?? 'XXX',
+                      ),
+                    ), // fmt
+                    Divider(height: 1),
+                    Expanded(
+                      child: _CurrencyInput(
+                        controller: toCtr,
+                        label: t.exchanger.to,
+                        onTapCurrency: () async {
+                          final result = await context.pushRoute<CurrencyInfo>(
+                            CurrencySelectorRoute(selection: value?.to),
+                          );
+                          if (result == null) return;
 
-                    settingsCtr.setTo(result);
-                  },
-                  onChanged: (value) => settingsCtr.setAmount(
-                    amount: double.tryParse(value),
-                    direction: ExchangeDirection.toFrom,
-                  ),
-                  currency: value?.to?.code ?? 'XXX',
+                          settingsCtr.setTo(result);
+                        },
+                        onChanged: (value) => settingsCtr.setAmount(
+                          amount: double.tryParse(value),
+                          direction: ExchangeDirection.toFrom,
+                        ),
+                        currency: value?.to?.code ?? 'XXX',
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
-      ),
+        Padding(
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 4,
+          ),
+          child: IconButton(
+            onPressed: () => context.pushRoute(SourceSelectorRoute()),
+            icon: Icon(Icons.settings_outlined),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -140,15 +164,9 @@ class _ShortExchanger extends ConsumerWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          value?.from?.code ?? '',
-          style: context.text.title,
-        ),
+        Text(value?.from?.code ?? '', style: context.text.title),
         Icon(Icons.chevron_right_rounded),
-        Text(
-          value?.to?.code ?? '',
-          style: context.text.title,
-        ),
+        Text(value?.to?.code ?? '', style: context.text.title),
       ],
     );
   }

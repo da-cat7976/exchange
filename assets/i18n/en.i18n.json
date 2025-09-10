@@ -16,5 +16,12 @@
     "db": "Database error: ${msg: String}",
     "networkInternal": "Internal error",
     "other": "Something went wrong: ${msg: String}"
+  },
+  "source": {
+    "title": "Select a rate source",
+    "sources(context=RateSource)": {
+      "openExchangeRates": "Open Exchange Rates",
+      "currencyApi": "Currency API"
+    }
   }
 }

@@ -1,2 +1,9 @@
 base_locale: en
 fallback_strategy: base_locale
+
+imports:
+  - 'package:exchange/domain/source.dart'
+
+contexts:
+  RateSource:
+    generate_enum: false
