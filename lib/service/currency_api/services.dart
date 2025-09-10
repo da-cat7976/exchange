@@ -2,49 +2,47 @@ import 'package:dio/dio.dart';
 import 'package:exchange/domain/currency.dart';
 import 'package:exchange/domain/rate.dart';
 import 'package:exchange/domain/source.dart';
-import 'package:exchange/service/open_exchange_rates/api.dart';
+import 'package:exchange/service/currency_api/api.dart';
 import 'package:exchange/utils/env.dart';
 
-final class OerCurrencyService implements CurrencyService {
-  final OpenExchangeRatesApi api;
+final class CurrencyApiCurrencyService implements CurrencyService {
+  CurrencyApiCurrencyService(Dio dio)
+    : api = CurrencyApiApi(dio, baseUrl: Env.currencyApiUrl);
 
-  OerCurrencyService(Dio dio)
-    : api = OpenExchangeRatesApi(Dio(), baseUrl: Env.openExchangeRatesApi);
+  final CurrencyApiApi api;
 
   @override
   Future<List<CurrencyInfo>> getAvailableCurrencies() async {
     final response = await api.getCurrencies();
-
     return response.entries
         .map(
           (e) => CurrencyInfo(
             code: e.key,
             name: e.value,
-            source: RateSource.openExchangeRates,
+            source: RateSource.currencyApi,
           ),
         )
         .toList();
   }
 }
 
-final class OerRatesService implements ExchangeRatesService {
-  final OpenExchangeRatesApi api;
+final class CurrencyApiRateService implements ExchangeRatesService {
+  CurrencyApiRateService(Dio dio)
+    : api = CurrencyApiApi(dio, baseUrl: Env.currencyApiUrl);
 
-  OerRatesService(Dio dio)
-    : api = OpenExchangeRatesApi(dio, baseUrl: Env.openExchangeRatesApi);
+  final CurrencyApiApi api;
 
   @override
   Future<ExchangeRates> getRates() async {
     final response = await api.getRates();
-
     return ExchangeRates(
       base: CurrencyInfo(
-        code: response.base,
-        source: RateSource.openExchangeRates,
+        code: RateSource.currencyApi.baseCurrencyCode,
+        source: RateSource.currencyApi,
       ),
-      rates: response.rates.map(
+      rates: response.usd.map(
         (code, rate) => MapEntry(
-          CurrencyInfo(code: code, source: RateSource.openExchangeRates),
+          CurrencyInfo(code: code, source: RateSource.currencyApi),
           rate,
         ),
       ),

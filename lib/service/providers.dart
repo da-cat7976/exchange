@@ -2,6 +2,7 @@ import 'package:exchange/domain/currency.dart';
 import 'package:exchange/domain/rate.dart';
 import 'package:exchange/domain/source.dart';
 import 'package:exchange/logic/source.dart';
+import 'package:exchange/service/currency_api/services.dart';
 import 'package:exchange/service/open_exchange_rates/api.dart';
 import 'package:exchange/service/open_exchange_rates/services.dart';
 import 'package:exchange/utils/dio.dart';
@@ -18,7 +19,10 @@ CurrencyService currencyService(Ref ref) {
 
   switch (source) {
     case RateSource.openExchangeRates:
-      return OerCurrencyService(api: OpenExchangeRatesApi(dio, baseUrl: Env.openExchangeRatesApi));
+      return OerCurrencyService(dio);
+
+    case RateSource.currencyApi:
+      return CurrencyApiCurrencyService(dio);
   }
 }
 
@@ -29,6 +33,9 @@ ExchangeRatesService exchangeRatesService(Ref ref) {
 
   switch (source) {
     case RateSource.openExchangeRates:
-      return OerRatesService(api: OpenExchangeRatesApi(dio, baseUrl: Env.openExchangeRatesApi));
+      return OerRatesService(dio);
+
+    case RateSource.currencyApi:
+      return CurrencyApiRateService(dio);
   }
 }

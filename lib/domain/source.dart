@@ -1,6 +1,7 @@
 enum RateSource {
   /// https://openexchangerates.org/
-  openExchangeRates('USD');
+  openExchangeRates('USD'),
+  currencyApi('USD');
 
   final String baseCurrencyCode;
 

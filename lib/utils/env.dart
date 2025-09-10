@@ -9,6 +9,8 @@ abstract class Env {
     'oerAppId',
   );
 
+  static const String currencyApiUrl = String.fromEnvironment('currencyApiUrl');
+
   static const String _defaultSource = String.fromEnvironment('defaultSource');
 
   static const String defaultFrom = String.fromEnvironment('defaultFrom');
