@@ -1,1 +1,10 @@
-{}
+{
+  "exchanger": {
+    "from": "From currency",
+    "to": "To currency",
+    "hint": "0.00"
+  },
+  "currencySelector": {
+    "title": "Select a currency"
+  }
+}

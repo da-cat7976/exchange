@@ -1,3 +1,4 @@
+import 'package:exchange/gen/strings.g.dart';
 import 'package:exchange/logic/exchange.dart';
 import 'package:exchange/theme/theme.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +56,7 @@ class Exchanger extends HookConsumerWidget {
                     Expanded(
                       child: _CurrencyInput(
                         controller: fromCtr,
-                        label: 'From currency',
+                        label: t.exchanger.from,
                         formatter: _formatter,
                         onTap: () {},
                         onChanged: (value) => ref
@@ -71,15 +72,15 @@ class Exchanger extends HookConsumerWidget {
                     Expanded(
                       child: _CurrencyInput(
                         controller: toCtr,
-                        label: 'To currency',
+                        label: t.exchanger.to,
                         formatter: _formatter,
                         onTap: () {},
                         onChanged: (value) => ref
                             .read(exchangeSettingsControllerProvider.notifier)
                             .setAmount(
-                          amount: double.tryParse(value),
-                          direction: ExchangeDirection.toFrom,
-                        ),
+                              amount: double.tryParse(value),
+                              direction: ExchangeDirection.toFrom,
+                            ),
                         currency: value?.to?.code ?? 'XXX',
                       ),
                     ),
@@ -133,7 +134,7 @@ class _CurrencyInput extends HookConsumerWidget {
               decoration: InputDecoration(
                 border: InputBorder.none,
                 labelText: label,
-                hintText: '0.00',
+                hintText: t.exchanger.hint,
                 isDense: true,
               ),
               onChanged: onChanged,
