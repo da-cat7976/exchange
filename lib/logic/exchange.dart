@@ -146,7 +146,7 @@ class ExchangeSettingsController extends _$ExchangeSettingsController {
 }
 
 @riverpod
-Future<double?> exchangedAmount(Ref ref) async {
+Future<RateExchangedPair?> exchangedAmount(Ref ref) async {
   final settings = ref
       .watch(exchangeSettingsControllerProvider)
       .valueOrNull
@@ -156,21 +156,11 @@ Future<double?> exchangedAmount(Ref ref) async {
   final rates = await ref.watch(ratesControllerProvider.future);
 
   final RateExchangedPair pair;
-  final HistoryEntry entry;
   if (settings.direction == ExchangeDirection.fromTo) {
     pair = rates.convertFrom(
       from: settings.from,
       to: settings.to,
       amount: settings.amount,
-    );
-
-    entry = FromHistoryEntry(
-      source: settings.from.source,
-      from: settings.from,
-      to: settings.to,
-      issuedAt: DateTime.now(),
-      fromAmount: settings.amount,
-      rate: pair.rate,
     );
   } else {
     pair = rates.convertTo(
@@ -178,19 +168,7 @@ Future<double?> exchangedAmount(Ref ref) async {
       to: settings.to,
       amount: settings.amount,
     );
-
-    entry = ToHistoryEntry(
-      source: settings.from.source,
-      from: settings.from,
-      to: settings.to,
-      issuedAt: DateTime.now(),
-      toAmount: settings.amount,
-      rate: pair.rate,
-    );
   }
 
-  // final historyRepo = ref.read(historyRepoProvider);
-  // historyRepo.save(entry);
-
-  return pair.exchanged;
+  return pair;
 }
