@@ -1,7 +1,6 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:equatable/equatable.dart';
 import 'package:exchange/domain/currency.dart';
-import 'package:exchange/domain/history.dart';
 import 'package:exchange/domain/rate.dart';
 import 'package:exchange/logic/currencies.dart';
 import 'package:exchange/logic/rates.dart';
@@ -107,8 +106,13 @@ class ExchangeSettingsController extends _$ExchangeSettingsController {
 
     return current.copyWith(
       from:
-          currencies?.presentOrNull(from) ?? currencies?.getByCode(from?.code) ?? currencies?.getByCode(Env.defaultFrom),
-      to: currencies?.presentOrNull(to) ?? currencies?.getByCode(to?.code) ?? currencies?.getByCode(Env.defaultTo),
+          currencies?.presentOrNull(from) ??
+          currencies?.getByCode(from?.code) ??
+          currencies?.getByCode(Env.defaultFrom),
+      to:
+          currencies?.presentOrNull(to) ??
+          currencies?.getByCode(to?.code) ??
+          currencies?.getByCode(Env.defaultTo),
     );
   }
 
