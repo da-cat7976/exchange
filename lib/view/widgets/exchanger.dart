@@ -13,6 +13,27 @@ class Exchanger extends HookConsumerWidget {
     final settings = ref.watch(exchangeSettingsControllerProvider);
     final value = settings.valueOrNull;
 
+    final fromCtr = useTextEditingController();
+    final toCtr = useTextEditingController();
+
+    final exchanged = ref.watch(exchangedAmountProvider).valueOrNull;
+    final exchangedStr = exchanged != null ? exchanged.toStringAsFixed(2) : '';
+
+    useEffect(() {
+      switch (value?.direction) {
+        case ExchangeDirection.fromTo:
+          toCtr.text = exchangedStr;
+
+        case ExchangeDirection.toFrom:
+          fromCtr.text = exchangedStr;
+
+        default:
+          break;
+      }
+
+      return;
+    }, [exchangedStr]);
+
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxHeight < 150) return SizedBox();
@@ -32,43 +53,34 @@ class Exchanger extends HookConsumerWidget {
                 child: Column(
                   children: [
                     Expanded(
-                      child: HookBuilder(
-                        builder: (_) => _CurrencyInput(
-                          controller: TextEditingController(),
-                          label: 'From currency',
-                          formatter: _formatter,
-                          onTap: () {},
-                          onChanged: (value) => ref
-                              .read(exchangeSettingsControllerProvider.notifier)
-                              .setAmount(
-                                amount: double.tryParse(value),
-                                direction: ExchangeDirection.fromTo,
-                              ),
-                          currency: value?.from?.code ?? 'XXX',
-                        ),
+                      child: _CurrencyInput(
+                        controller: fromCtr,
+                        label: 'From currency',
+                        formatter: _formatter,
+                        onTap: () {},
+                        onChanged: (value) => ref
+                            .read(exchangeSettingsControllerProvider.notifier)
+                            .setAmount(
+                              amount: double.tryParse(value),
+                              direction: ExchangeDirection.fromTo,
+                            ),
+                        currency: value?.from?.code ?? 'XXX',
                       ),
                     ), // fmt
                     Divider(height: 1),
                     Expanded(
-                      child: HookConsumer(
-                        builder: (_, ref, _) {
-                          var ctr = useTextEditingController();
-
-                          final exchanged = ref.watch(exchangedAmountProvider);
-                          useEffect(() {
-                            ctr.text = exchanged.valueOrNull?.toString() ?? '';
-                            return;
-                          });
-
-                          return _CurrencyInput(
-                            controller: ctr,
-                            // label: 'To currency',
-                            label: exchanged.valueOrNull.toString(),
-                            formatter: _formatter,
-                            onTap: () {},
-                            currency: value?.to?.code ?? 'XXX',
-                          );
-                        },
+                      child: _CurrencyInput(
+                        controller: toCtr,
+                        label: 'To currency',
+                        formatter: _formatter,
+                        onTap: () {},
+                        onChanged: (value) => ref
+                            .read(exchangeSettingsControllerProvider.notifier)
+                            .setAmount(
+                          amount: double.tryParse(value),
+                          direction: ExchangeDirection.toFrom,
+                        ),
+                        currency: value?.to?.code ?? 'XXX',
                       ),
                     ),
                   ],
@@ -117,7 +129,7 @@ class _CurrencyInput extends HookConsumerWidget {
         children: [
           Expanded(
             child: TextField(
-              // controller: controller,
+              controller: controller,
               decoration: InputDecoration(
                 border: InputBorder.none,
                 labelText: label,
