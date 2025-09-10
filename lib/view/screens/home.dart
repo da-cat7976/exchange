@@ -3,6 +3,7 @@ import 'package:exchange/theme/theme.dart';
 import 'package:exchange/view/widgets/connectivity.dart';
 import 'package:exchange/view/widgets/exchanger.dart';
 import 'package:exchange/view/widgets/history.dart';
+import 'package:exchange/view/widgets/trends.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -35,7 +36,7 @@ class HomeScreen extends HookConsumerWidget {
                   flexibleSpace: Exchanger(),
                   expandedHeight: 200,
                 ),
-                // fmt
+                SliverToBoxAdapter(child: TrendView()),
                 HistoryHeader(),
                 HistoryView(),
               ],

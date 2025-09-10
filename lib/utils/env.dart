@@ -11,6 +11,8 @@ abstract class Env {
 
   static const String currencyApiUrl = String.fromEnvironment('currencyApiUrl');
 
+  static const String currencyApiHistoryUrl = String.fromEnvironment('currencyApiHistory');
+
   static const String _defaultSource = String.fromEnvironment('defaultSource');
 
   static const String defaultFrom = String.fromEnvironment('defaultFrom');

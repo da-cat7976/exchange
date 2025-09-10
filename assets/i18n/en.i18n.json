@@ -8,7 +8,7 @@
     "title": "Select a currency"
   },
   "history": {
-    "title": "History"
+    "title": "Conversion history"
   },
   "errors": {
     "noInternet": "No internet connection",
@@ -23,5 +23,8 @@
       "openExchangeRates": "Open Exchange Rates",
       "currencyApi": "Currency API"
     }
+  },
+  "trends": {
+    "loading": "Chart will arrive shortly..."
   }
 }

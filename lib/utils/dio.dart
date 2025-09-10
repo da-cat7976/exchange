@@ -15,5 +15,15 @@ part 'dio.g.dart';
 /// is inserted into retrofit adapter methods directly.
 @Riverpod(keepAlive: true)
 Dio dio(Ref ref) {
-  return Dio();
+  return DioFactory.instance.create();
+}
+
+class DioFactory {
+  static const instance = DioFactory._();
+
+  const DioFactory._();
+
+  Dio create() {
+    return Dio();
+  }
 }

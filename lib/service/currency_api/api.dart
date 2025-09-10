@@ -12,7 +12,7 @@ abstract interface class CurrencyApiApi {
   Future<Map<String, String>> getCurrencies();
 
   @GET('/currencies/usd.json')
-  Future<CurrencyApiRatesRsDto> getRates();
+  Future<CurrencyApiRatesRsDto> getRates({@Query('date') String? date});
 }
 
 @JsonSerializable(createToJson: false)
@@ -21,10 +21,7 @@ class CurrencyApiRatesRsDto {
 
   final Map<String, double> usd;
 
-  const CurrencyApiRatesRsDto({
-    required this.date,
-    required this.usd,
-  });
+  const CurrencyApiRatesRsDto({required this.date, required this.usd});
 
   factory CurrencyApiRatesRsDto.fromJson(Map<String, dynamic> json) =>
       _$CurrencyApiRatesRsDtoFromJson(json);

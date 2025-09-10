@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:animated_switcher_plus/animated_switcher_plus.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:exchange/domain/currency.dart';
@@ -29,16 +27,14 @@ class Exchanger extends HookConsumerWidget {
         if (constraints.maxHeight < 150) {
           child = Center(key: ValueKey('short'), child: _ShortExchanger());
         } else {
-          final horizontalPadding = constraints.maxWidth / 9;
-
           child = Padding(
             key: ValueKey('full'),
             padding: EdgeInsetsGeometry.only(
-              left: horizontalPadding,
+              left: 24,
               top: 24,
               bottom: 24,
             ),
-            child: _FullExchanger(horizontalPadding: horizontalPadding),
+            child: _FullExchanger(),
           );
         }
 
@@ -52,9 +48,7 @@ class Exchanger extends HookConsumerWidget {
 }
 
 class _FullExchanger extends HookConsumerWidget {
-  const _FullExchanger({super.key, required this.horizontalPadding});
-
-  final double horizontalPadding;
+  const _FullExchanger({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -110,7 +104,7 @@ class _FullExchanger extends HookConsumerWidget {
                           amount: double.tryParse(value),
                           direction: ExchangeDirection.fromTo,
                         ),
-                        currency: value?.from?.code ?? 'XXX',
+                        currency: value?.from?.code ?? '',
                       ),
                     ), // fmt
                     Divider(height: 1),
@@ -130,7 +124,7 @@ class _FullExchanger extends HookConsumerWidget {
                           amount: double.tryParse(value),
                           direction: ExchangeDirection.toFrom,
                         ),
-                        currency: value?.to?.code ?? 'XXX',
+                        currency: value?.to?.code ?? '',
                       ),
                     ),
                   ],
@@ -140,10 +134,7 @@ class _FullExchanger extends HookConsumerWidget {
           ),
         ),
         Padding(
-          padding: EdgeInsets.only(
-            left: 16,
-            right: 4,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: 4),
           child: IconButton(
             onPressed: () => context.pushRoute(SourceSelectorRoute()),
             icon: Icon(Icons.settings_outlined),
