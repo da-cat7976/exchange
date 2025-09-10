@@ -14,36 +14,38 @@ class HomeScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: CustomScrollView(
-              slivers: [
-                SliverAppBar(
-                  floating: true,
-                  pinned: true,
-                  backgroundColor: context.color.bg,
-                  surfaceTintColor: context.color.bg,
-                  actions: [
-                    Padding(
-                      padding: EdgeInsets.only(right: 4),
-                      child: IconButton(
-                        onPressed: () => showLicensePage(context: context),
-                        icon: Icon(Icons.info_outline_rounded),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: CustomScrollView(
+                slivers: [
+                  SliverAppBar(
+                    floating: true,
+                    pinned: true,
+                    backgroundColor: context.color.bg,
+                    surfaceTintColor: context.color.bg,
+                    actions: [
+                      Padding(
+                        padding: EdgeInsets.only(right: 4),
+                        child: IconButton(
+                          onPressed: () => showLicensePage(context: context),
+                          icon: Icon(Icons.info_outline_rounded),
+                        ),
                       ),
-                    ),
-                  ],
-                  flexibleSpace: Exchanger(),
-                  expandedHeight: 200,
-                ),
-                SliverToBoxAdapter(child: TrendView()),
-                HistoryHeader(),
-                HistoryView(),
-              ],
+                    ],
+                    flexibleSpace: Exchanger(),
+                    expandedHeight: 200,
+                  ),
+                  SliverToBoxAdapter(child: TrendView()),
+                  HistoryHeader(),
+                  HistoryView(),
+                ],
+              ),
             ),
-          ),
-          ConnectivityBanner(),
-        ],
+            ConnectivityBanner(),
+          ],
+        ),
       ),
     );
   }

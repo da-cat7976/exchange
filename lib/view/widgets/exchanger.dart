@@ -133,8 +133,8 @@ class _FullExchanger extends HookConsumerWidget {
             ),
           ),
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 4),
+        SizedBox(
+          width: 56,
           child: IconButton(
             onPressed: () => context.pushRoute(SourceSelectorRoute()),
             icon: Icon(Icons.settings_outlined),

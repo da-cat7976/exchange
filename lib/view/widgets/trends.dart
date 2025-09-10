@@ -69,7 +69,7 @@ class _ActualTrendView extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: min(screenSize.width * 2 / 3, screenSize.height / 2),
-      margin: EdgeInsets.only(left: 24, right: 40 + 4 * 2),
+      margin: EdgeInsets.only(left: 24, right: 56),
       padding: EdgeInsets.symmetric(horizontal: 48, vertical: 16),
       decoration: BoxDecoration(
         color: context.color.surface,
