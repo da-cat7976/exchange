@@ -64,7 +64,7 @@ final class ToHistoryEntry extends HistoryEntry with EquatableMixin {
   });
 
   @override
-  double get exchanged => toAmount / rate;
+  double get exchanged => toAmount * rate;
 
   @override
   List<Object?> get props => [...super.props, toAmount];
