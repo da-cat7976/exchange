@@ -73,12 +73,12 @@ class HistoryDao extends DatabaseAccessor<AppDatabase>
       innerJoin(
         from,
         historyEntries.from.equalsExp(from.code) &
-        historyEntries.source.equalsExp(from.source),
+            historyEntries.source.equalsExp(from.source),
       ),
       innerJoin(
         to,
         historyEntries.to.equalsExp(to.code) &
-        historyEntries.source.equalsExp(to.source),
+            historyEntries.source.equalsExp(to.source),
       ),
     ]);
 
@@ -106,6 +106,12 @@ class HistoryDao extends DatabaseAccessor<AppDatabase>
       from: entry.from.code,
       to: entry.to.code,
       rate: entry.rate,
+      fromAmount: Value.absentIfNull(
+        entry is FromHistoryEntry ? entry.fromAmount : null,
+      ),
+      toAmount: Value.absentIfNull(
+        entry is ToHistoryEntry ? entry.toAmount : null,
+      ),
       issuedAt: DateTime.now(),
     );
 
