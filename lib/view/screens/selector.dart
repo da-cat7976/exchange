@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:exchange/domain/currency.dart';
 import 'package:exchange/gen/strings.g.dart';
 import 'package:exchange/logic/currencies.dart';
 import 'package:exchange/theme/theme.dart';
@@ -8,7 +9,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 @RoutePage()
 class CurrencySelectorScreen extends HookConsumerWidget {
-  const CurrencySelectorScreen({super.key});
+  const CurrencySelectorScreen({super.key, this.selection});
+
+  final CurrencyInfo? selection;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -67,6 +70,7 @@ class CurrencySelectorScreen extends HookConsumerWidget {
           final currency = filtered.value![i];
 
           return ListTile(
+            selected: currency == selection,
             subtitle: Text(currency.name),
             title: Text(currency.code),
             onTap: () => context.pop(currency),

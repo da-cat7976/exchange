@@ -85,7 +85,7 @@ class _FullExchanger extends HookConsumerWidget {
                   label: t.exchanger.from,
                   onTapCurrency: () async {
                     final result = await context.pushRoute<CurrencyInfo>(
-                      CurrencySelectorRoute(),
+                      CurrencySelectorRoute(selection: value?.from),
                     );
                     if (result == null) return;
 
@@ -105,7 +105,7 @@ class _FullExchanger extends HookConsumerWidget {
                   label: t.exchanger.to,
                   onTapCurrency: () async {
                     final result = await context.pushRoute<CurrencyInfo>(
-                      CurrencySelectorRoute(),
+                      CurrencySelectorRoute(selection: value?.to),
                     );
                     if (result == null) return;
 
