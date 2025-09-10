@@ -1,16 +1,48 @@
+import 'package:animated_switcher_plus/animated_switcher_plus.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:exchange/domain/currency.dart';
 import 'package:exchange/gen/strings.g.dart';
 import 'package:exchange/logic/exchange.dart';
+import 'package:exchange/logic/history.dart';
 import 'package:exchange/navigation/router.gr.dart';
 import 'package:exchange/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class Exchanger extends HookConsumerWidget {
   const Exchanger({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final Widget child;
+        if (constraints.maxHeight < 150) {
+          child = Center(key: ValueKey('short'), child: _ShortExchanger());
+        } else {
+          final horizontalPadding = constraints.maxWidth / 9;
+
+          child = Padding(
+            key: ValueKey('full'),
+            padding: EdgeInsets.symmetric(
+              horizontal: horizontalPadding,
+              vertical: 24,
+            ),
+            child: _FullExchanger(),
+          );
+        }
+
+        return AnimatedSwitcherPlus.translationRight(duration: 300.ms, child: child);
+      },
+    );
+  }
+}
+
+class _FullExchanger extends HookConsumerWidget {
+  const _FullExchanger({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,7 +53,7 @@ class Exchanger extends HookConsumerWidget {
     final fromCtr = useTextEditingController();
     final toCtr = useTextEditingController();
 
-    final exchanged = ref.watch(exchangedAmountProvider).valueOrNull;
+    final exchanged = ref.watch(exchangedAmountProvider).valueOrNull?.exchanged;
     final exchangedStr = exchanged != null ? exchanged.toStringAsFixed(2) : '';
 
     useEffect(() {
@@ -39,78 +71,83 @@ class Exchanger extends HookConsumerWidget {
       return;
     }, [exchangedStr]);
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxHeight < 150) return SizedBox();
-        final horizontalPadding = constraints.maxWidth / 9;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: Container(
+        decoration: BoxDecoration(color: context.color.surface),
+        child: Material(
+          color: Colors.transparent,
+          child: Column(
+            children: [
+              Expanded(
+                child: _CurrencyInput(
+                  controller: fromCtr,
+                  label: t.exchanger.from,
+                  onTapCurrency: () async {
+                    final result = await context.pushRoute<CurrencyInfo>(
+                      CurrencySelectorRoute(),
+                    );
+                    if (result == null) return;
 
-        return Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: horizontalPadding,
-            vertical: 24,
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(24),
-            child: Container(
-              decoration: BoxDecoration(color: context.color.surface),
-              child: Material(
-                color: Colors.transparent,
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: _CurrencyInput(
-                        controller: fromCtr,
-                        label: t.exchanger.from,
-                        formatter: _formatter,
-                        onTapCurrency: () async {
-                          final result = await context.pushRoute<CurrencyInfo>(
-                            CurrencySelectorRoute(),
-                          );
-                          if (result == null) return;
+                    settingsCtr.setFrom(result);
+                  },
+                  onChanged: (value) => settingsCtr.setAmount(
+                    amount: double.tryParse(value),
+                    direction: ExchangeDirection.fromTo,
+                  ),
+                  currency: value?.from?.code ?? 'XXX',
+                ),
+              ), // fmt
+              Divider(height: 1),
+              Expanded(
+                child: _CurrencyInput(
+                  controller: toCtr,
+                  label: t.exchanger.to,
+                  onTapCurrency: () async {
+                    final result = await context.pushRoute<CurrencyInfo>(
+                      CurrencySelectorRoute(),
+                    );
+                    if (result == null) return;
 
-                          settingsCtr.setFrom(result);
-                        },
-                        onChanged: (value) => settingsCtr.setAmount(
-                          amount: double.tryParse(value),
-                          direction: ExchangeDirection.fromTo,
-                        ),
-                        currency: value?.from?.code ?? 'XXX',
-                      ),
-                    ), // fmt
-                    Divider(height: 1),
-                    Expanded(
-                      child: _CurrencyInput(
-                        controller: toCtr,
-                        label: t.exchanger.to,
-                        formatter: _formatter,
-                        onTapCurrency: () async {
-                          final result = await context.pushRoute<CurrencyInfo>(
-                            CurrencySelectorRoute(),
-                          );
-                          if (result == null) return;
-
-                          settingsCtr.setTo(result);
-                        },
-                        onChanged: (value) => settingsCtr.setAmount(
-                          amount: double.tryParse(value),
-                          direction: ExchangeDirection.toFrom,
-                        ),
-                        currency: value?.to?.code ?? 'XXX',
-                      ),
-                    ),
-                  ],
+                    settingsCtr.setTo(result);
+                  },
+                  onChanged: (value) => settingsCtr.setAmount(
+                    amount: double.tryParse(value),
+                    direction: ExchangeDirection.toFrom,
+                  ),
+                  currency: value?.to?.code ?? 'XXX',
                 ),
               ),
-            ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
+}
 
-  static final _formatter = FilteringTextInputFormatter.allow(
-    RegExp(r'^(\d+)?\.?\d{0,2}'),
-  );
+class _ShortExchanger extends ConsumerWidget {
+  const _ShortExchanger();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final value = ref.watch(exchangeSettingsControllerProvider).valueOrNull;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          value?.from?.code ?? '',
+          style: context.text.title,
+        ),
+        Icon(Icons.chevron_right_rounded),
+        Text(
+          value?.to?.code ?? '',
+          style: context.text.title,
+        ),
+      ],
+    );
+  }
 }
 
 class _CurrencyInput extends HookConsumerWidget {
@@ -118,17 +155,14 @@ class _CurrencyInput extends HookConsumerWidget {
     super.key,
     required this.controller,
     required this.label,
-    required FilteringTextInputFormatter formatter,
     required this.onTapCurrency,
     required this.currency,
     this.onChanged,
-  }) : _formatter = formatter;
+  });
 
   final TextEditingController controller;
 
   final String label;
-
-  final FilteringTextInputFormatter _formatter;
 
   final VoidCallback onTapCurrency;
 
@@ -138,12 +172,16 @@ class _CurrencyInput extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final historyCtr = ref.watch(historyControllerProvider.notifier);
+    final node = useFocusNode();
+
     return Padding(
       padding: EdgeInsets.only(left: 16),
       child: Row(
         children: [
           Expanded(
             child: TextField(
+              focusNode: node,
               controller: controller,
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -152,6 +190,10 @@ class _CurrencyInput extends HookConsumerWidget {
                 isDense: true,
               ),
               onChanged: onChanged,
+              onTapOutside: (_) {
+                node.unfocus();
+                historyCtr.commitCurrent();
+              },
               maxLines: 1,
               keyboardType: TextInputType.number,
               inputFormatters: [_formatter],
@@ -169,4 +211,8 @@ class _CurrencyInput extends HookConsumerWidget {
       ),
     );
   }
+
+  static final _formatter = FilteringTextInputFormatter.allow(
+    RegExp(r'^(\d+)?\.?\d{0,2}'),
+  );
 }

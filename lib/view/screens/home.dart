@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:exchange/theme/theme.dart';
 import 'package:exchange/view/widgets/exchanger.dart';
+import 'package:exchange/view/widgets/history.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -19,16 +20,20 @@ class HomeScreen extends HookConsumerWidget {
             backgroundColor: context.color.bg,
             surfaceTintColor: context.color.bg,
             actions: [
-              IconButton(
-                onPressed: () => showLicensePage(context: context),
-                icon: Icon(Icons.info_outline_rounded),
+              Padding(
+                padding: EdgeInsets.only(right: 4),
+                child: IconButton(
+                  onPressed: () => showLicensePage(context: context),
+                  icon: Icon(Icons.info_outline_rounded),
+                ),
               ),
             ],
             flexibleSpace: Exchanger(),
             expandedHeight: 200,
           ),
           // fmt
-          SliverToBoxAdapter(child: Placeholder(fallbackHeight: 1000)),
+          HistoryHeader(),
+          HistoryView(),
         ],
       ),
     );
