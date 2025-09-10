@@ -6,6 +6,7 @@ import 'package:exchange/logic/exchange.dart';
 import 'package:exchange/logic/history.dart';
 import 'package:exchange/navigation/router.gr.dart';
 import 'package:exchange/theme/theme.dart';
+import 'package:exchange/view/utils/error.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -17,6 +18,9 @@ class Exchanger extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    context.handleErrors(ref, exchangeSettingsControllerProvider);
+    context.handleErrors(ref, exchangedAmountProvider);
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final Widget child;

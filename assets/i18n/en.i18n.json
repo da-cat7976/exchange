@@ -6,5 +6,15 @@
   },
   "currencySelector": {
     "title": "Select a currency"
+  },
+  "history": {
+    "title": "History"
+  },
+  "errors": {
+    "noInternet": "No internet connection",
+    "network": "Network error: ${msg}",
+    "db": "Database error: ${msg: String}",
+    "networkInternal": "Internal error",
+    "other": "Something went wrong: ${msg: String}"
   }
 }

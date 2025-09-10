@@ -2,6 +2,7 @@ import 'package:exchange/domain/currency.dart';
 import 'package:exchange/domain/history.dart';
 import 'package:exchange/logic/history.dart';
 import 'package:exchange/theme/theme.dart';
+import 'package:exchange/view/utils/error.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -11,6 +12,7 @@ class HistoryHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final historyCtr = ref.watch(historyControllerProvider.notifier);
+    context.handleErrors(ref, historyProvider);
 
     return PinnedHeaderSliver(
       child: Container(

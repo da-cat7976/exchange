@@ -83,6 +83,7 @@ class AppColorTheme extends ThemeExtension<AppColorTheme>
     required this.surface,
     required this.onSurfaceDimmed,
     required this.onSurface,
+    required this.error,
   });
 
   factory AppColorTheme.dark() {
@@ -91,6 +92,7 @@ class AppColorTheme extends ThemeExtension<AppColorTheme>
       surface: Color(0xFF303030),
       onSurfaceDimmed: Color(0xFF909090),
       onSurface: Color(0xFFFAFAFA),
+      error: Color(0xFFE02020),
     );
   }
 
@@ -105,4 +107,7 @@ class AppColorTheme extends ThemeExtension<AppColorTheme>
 
   @override
   final Color onSurface;
+
+  @override
+  final Color error;
 }
