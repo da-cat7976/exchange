@@ -16,18 +16,19 @@ class TrendView extends HookConsumerWidget {
     final trendState = ref.watch(trendForCurrentProvider);
     final trend = trendState.valueOrNull;
     final Widget child;
-    if (trendState.isLoading && trend == null) {
+    if (trendState.isLoading && (trend == null || trend.isEmpty)) {
       child = SizedBox(
         key: ValueKey('loading'),
         width: double.infinity,
-        height: 100,
-        child: Text(
-          t.trends.loading,
-          style: context.text.body.copyWith(color: context.color.onSurfaceDimmed),
-          textAlign: TextAlign.center,
-        ).animate(
-          onPlay: (c) => c.repeat(reverse: true)
-        ).fade(duration: 1000.ms),
+        height: 80,
+        child: Center(
+          child: Text(
+            t.trends.loading,
+            style: context.text.body.copyWith(color: context.color.onSurfaceDimmed),
+          ).animate(
+            onPlay: (c) => c.repeat(reverse: true)
+          ).fade(duration: 1000.ms),
+        ),
       );
     } else if (trend == null || trend.isEmpty) {
       child = SizedBox();
@@ -36,7 +37,7 @@ class TrendView extends HookConsumerWidget {
     }
 
     return AnimatedSize(
-      duration: 300.ms,
+      duration: 500.ms,
       curve: Curves.easeInOut,
       child: child,
     );
