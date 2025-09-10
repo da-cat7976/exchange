@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:exchange/theme/theme.dart';
+import 'package:exchange/view/widgets/connectivity.dart';
 import 'package:exchange/view/widgets/exchanger.dart';
 import 'package:exchange/view/widgets/history.dart';
 import 'package:flutter/material.dart';
@@ -12,28 +13,35 @@ class HomeScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            floating: true,
-            pinned: true,
-            backgroundColor: context.color.bg,
-            surfaceTintColor: context.color.bg,
-            actions: [
-              Padding(
-                padding: EdgeInsets.only(right: 4),
-                child: IconButton(
-                  onPressed: () => showLicensePage(context: context),
-                  icon: Icon(Icons.info_outline_rounded),
+      body: Column(
+        children: [
+          Expanded(
+            child: CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  floating: true,
+                  pinned: true,
+                  backgroundColor: context.color.bg,
+                  surfaceTintColor: context.color.bg,
+                  actions: [
+                    Padding(
+                      padding: EdgeInsets.only(right: 4),
+                      child: IconButton(
+                        onPressed: () => showLicensePage(context: context),
+                        icon: Icon(Icons.info_outline_rounded),
+                      ),
+                    ),
+                  ],
+                  flexibleSpace: Exchanger(),
+                  expandedHeight: 200,
                 ),
-              ),
-            ],
-            flexibleSpace: Exchanger(),
-            expandedHeight: 200,
+                // fmt
+                HistoryHeader(),
+                HistoryView(),
+              ],
+            ),
           ),
-          // fmt
-          HistoryHeader(),
-          HistoryView(),
+          ConnectivityBanner(),
         ],
       ),
     );
